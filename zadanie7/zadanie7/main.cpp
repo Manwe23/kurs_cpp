@@ -12,8 +12,9 @@ int main()
 	Matrix m2 = Matrix(*m);
 	cout << m2;
 	cin >> m2;
-
-	cout <<  3 * m2;
+	*m = m2;
+	m2.transpose();
+	cout << (*m)  * m2;
 	char c;
 	cin >> c;
 	return 1;

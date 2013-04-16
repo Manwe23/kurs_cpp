@@ -8,7 +8,8 @@ using namespace std;
 
 Matrix::Matrix(void) : width(0), heigth(0)
 {
-	matrix = nullptr;
+	matrix = NULL;
+	//matrix = nullptr; //g++ nie obsluguje nullptr
 }
 
 
@@ -67,6 +68,26 @@ Matrix::~Matrix(void)
 }
 
 
+void Matrix::transpose(void)
+{
+	double **new_matrix = new double*[heigth];
+	for (int i = 0 ; i < heigth ; ++i)
+	{
+		new_matrix[i] = new double[width];
+		for(int j = 0 ; j < width ; ++j)
+			new_matrix[i][j] = matrix[j][i];
+	}
+	int tmp = width;
+	width = heigth;
+	heigth = tmp;
+	for (int i = 0 ; i < width ; ++i)
+		delete[] matrix[i];
+	delete[] matrix;
+	matrix = new_matrix;
+}
+
+
+
 Matrix operator *(double x, const Matrix & m)
 {
 	Matrix *matrix = new Matrix(m);
@@ -77,6 +98,24 @@ Matrix operator *(double x, const Matrix & m)
 			matrix->matrix[i][j] *= x;
 	return *matrix;
 }
+
+
+
+Matrix operator *(const Matrix & m1, const Matrix & m2)
+{
+	Matrix *matrix = new Matrix(m1.heigth,m2.width);
+	
+	for (int i = 0 ; i < matrix->width ; ++i)
+		for (int j = 0 ; j < matrix->heigth; ++j)
+		{
+			double sum = 0.0;
+			for(int k = 0; k < m1.width; ++k)
+				sum += m1.matrix[k][i] * m2.matrix[j][k];
+			matrix->matrix[i][j] = sum;
+		}	
+	return *matrix;
+}
+
 
 
 Matrix operator +(const Matrix & m1, const Matrix & m2)
@@ -148,7 +187,7 @@ istream & operator >> (istream & input, Matrix &m)
 
 ostream & operator << (ostream & output, const Matrix &m)
 {
-	if(m.matrix == nullptr) output << "empty";
+	if(m.matrix == NULL) output << "empty";
 	for (int i = 0 ; i < m.heigth ; ++i)
 	{
 		for (int j = 0 ; j < m.width ; ++j)
